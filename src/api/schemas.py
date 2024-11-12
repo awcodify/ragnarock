@@ -25,3 +25,11 @@ class AnalysisResponse(BaseModel):
     current_metrics: Dict
     similar_patterns: Dict
     analysis: MetricAnalysis
+
+class HealthStatus(BaseModel):
+    status: str
+    error: str | None = None
+
+class HealthCheckResponse(BaseModel):
+    status: str
+    services: Dict[str, HealthStatus]
