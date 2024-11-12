@@ -36,7 +36,6 @@ ENV/
 .env.local
 .env.*.local
 *.log
-data/
 .pytest_cache/
 .coverage
 htmlcov/

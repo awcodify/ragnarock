@@ -1,9 +1,11 @@
-.PHONY: setup test run docker-build docker-run
+SHELL := /bin/bash
+
+.PHONY: setup test run docker-build docker-run clean
 
 setup:
-		python3 -m venv ragnarock
-		. ragnarock/bin/activate && pip install -r requirements.txt
-		. ragnarock/bin/activate && pip install -e .
+		python3 -m venv ragnarock && \
+		. ./ragnarock/bin/activate && \
+		pip install -r requirements.txt
 
 test:
 		pytest tests/ -v
@@ -16,3 +18,9 @@ docker-build:
 
 docker-run:
 		docker run -p 8000:8000 --env-file .env infra-rag
+
+clean:
+		rm -rf ragnarock/
+		find . -type d -name "__pycache__" -exec rm -rf {} +
+		find . -type f -name "*.pyc" -delete
+		find . -type d -name ".pytest_cache" -exec rm -rf {} +
