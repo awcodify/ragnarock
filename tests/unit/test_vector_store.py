@@ -8,12 +8,12 @@ from src.data.vector_store import MetricsVectorStore
 def mock_qdrant():
     with patch('src.data.vector_store.QdrantClient') as mock:
         yield mock
-
+        
 @pytest.fixture
 def mock_embeddings():
     with patch('src.data.vector_store.HuggingFaceEmbeddings') as mock:
         embedder = MagicMock()
-        embedder.embed_documents.return_value = [[0.1] * 384]  # Match MiniLM dimension
+        embedder.embed_documents.return_value = [[0.1] * 384]  # Match embedding size
         embedder.embed_query.return_value = [0.1] * 384
         mock.return_value = embedder
         yield mock
@@ -28,9 +28,14 @@ def test_metrics():
         }
     ]
 
-def test_initialization(mock_qdrant, mock_embeddings):
+def test_initialization(mock_qdrant):
+    mock_client = mock_qdrant.return_value
+    mock_client.collection_exists.return_value = False
+    
     store = MetricsVectorStore()
-    mock_qdrant.return_value.recreate_collection.assert_called_once()
+    
+    mock_client.collection_exists.assert_called_once()
+    mock_client.create_collection.assert_called_once()
 
 def test_add_metrics(mock_qdrant, mock_embeddings, test_metrics):
     store = MetricsVectorStore()

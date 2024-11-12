@@ -26,7 +26,7 @@ async def health_check():
 async def analyze_metrics(request: QueryRequest) -> Dict:
     try:
         analyzer = MetricsAnalyzer(settings.prometheus_url)
-        results = analyzer.analyze_query(request.query)
+        results = await analyzer.analyze_query(request.query)  # Make async call
         logger.info(f"Successfully analyzed query: {request.query}")
         return results
     except Exception as e:

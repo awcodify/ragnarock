@@ -8,21 +8,22 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 class MetricsVectorStore:
     def __init__(self, collection_name: str = "metrics"):
         self.collection_name = collection_name
+        self.client = QdrantClient(":memory:")
         self.embeddings = HuggingFaceEmbeddings(
             model_name="sentence-transformers/all-MiniLM-L6-v2"
         )
-        self.client = QdrantClient(":memory:")  # Local in-memory for dev
         self._create_collection()
 
     def _create_collection(self):
         """Initialize vector collection"""
-        self.client.recreate_collection(
-            collection_name=self.collection_name,
-            vectors_config=models.VectorParams(
-                size=384,  # MiniLM embedding size
-                distance=models.Distance.COSINE
+        if not self.client.collection_exists(self.collection_name):
+            self.client.create_collection(
+                collection_name=self.collection_name,
+                vectors_config=models.VectorParams(
+                    size=384,
+                    distance=models.Distance.COSINE
+                )
             )
-        )
 
     def _format_metric_text(self, metric: Dict) -> str:
         return f"Metric: {metric['metric']} Value: {metric['value']} Time: {datetime.fromtimestamp(metric['timestamp'])}"
