@@ -17,14 +17,14 @@ class QueryRequest(BaseModel):
 class MetricAnalysis(BaseModel):
     summary: str = Field(..., description="Overall analysis summary")
     historical_comparison: str = Field(..., description="Comparison with past patterns")
-    anomalies: List[str] = Field(default_factory=list, description="Detected anomalies")
-    recommendations: List[str] = Field(default_factory=list, description="Improvement suggestions")
-    risk_level: RiskLevel = Field(..., description="Current risk assessment")
+    anomalies: List[str] = Field(default_factory=list)
+    recommendations: List[str] = Field(default_factory=list)
+    risk_level: RiskLevel = Field(default=RiskLevel.LOW)
 
 class AnalysisResponse(BaseModel):
-    current_metrics: Dict
-    similar_patterns: Dict
-    analysis: MetricAnalysis
+    current_metrics: Dict[str, Dict] = Field(..., description="Current metric values")
+    similar_patterns: Dict[str, Dict] = Field(..., description="Similar historical patterns")
+    analysis: MetricAnalysis = Field(..., description="Analysis results")
 
 class HealthStatus(BaseModel):
     status: str
