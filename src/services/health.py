@@ -34,8 +34,7 @@ class HealthChecker:
         try:
             if settings.llm_provider == LLMProvider.CLAUDE:
                 client = Anthropic(api_key=settings.anthropic_api_key)
-                # Simple validation call
-                await client.messages.create(
+                client.messages.create(
                     model=settings.claude_model,
                     max_tokens=1,
                     messages=[{"role": "user", "content": "hi"}]
