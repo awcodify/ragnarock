@@ -1,18 +1,29 @@
 import pytest
-from unittest.mock import patch, AsyncMock
+from unittest.mock import patch, MagicMock, AsyncMock
 from src.services.health import HealthChecker
 
 @pytest.mark.asyncio
 async def test_health_check_all_healthy():
+    mock_response = MagicMock()
+    mock_response.content = "test response"
+    
     with patch('src.services.health.PrometheusConnect') as mock_prom, \
          patch('src.services.health.QdrantClient') as mock_qdrant, \
-         patch('src.services.health.Anthropic') as mock_llm:
+         patch('src.services.health.Anthropic') as mock_anthropic, \
+         patch('src.services.health.settings') as mock_settings:
         
         # Setup mocks
         mock_prom.return_value.check_prometheus_connection = lambda: None
         mock_qdrant.return_value.get_collections = lambda: []
-        mock_llm.return_value.messages.create = AsyncMock()
-
+        
+        # Setup synchronous mock for Claude
+        mock_client = MagicMock()  # Changed from AsyncMock to MagicMock
+        mock_client.messages.create.return_value = mock_response
+        mock_anthropic.return_value = mock_client
+        
+        # Set provider to CLAUDE
+        mock_settings.llm_provider = "claude"
+        
         result = await HealthChecker.check_all()
         
         assert result["status"] == "healthy"

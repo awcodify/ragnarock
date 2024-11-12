@@ -34,14 +34,17 @@ class HealthChecker:
         try:
             if settings.llm_provider == LLMProvider.CLAUDE:
                 client = Anthropic(api_key=settings.anthropic_api_key)
-                client.messages.create(
+                # Use synchronous call for Claude
+                response = client.messages.create(
                     model=settings.claude_model,
                     max_tokens=1,
                     messages=[{"role": "user", "content": "hi"}]
                 )
+                if not response:
+                    raise Exception("No response from Claude")
             else:
                 client = OpenAI(api_key=settings.openai_api_key)
-                await client.chat.completions.create(
+                response = await client.chat.completions.create(
                     model=settings.gpt_model,
                     max_tokens=1,
                     messages=[{"role": "user", "content": "hi"}]
