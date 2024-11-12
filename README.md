@@ -1,6 +1,4 @@
-<img alt="Python Version" src="https://img.shields.io/badge/python-3.11+-blue">
-<img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-0.104.1-green">
-<img alt="Code style: black" src="https://img.shields.io/badge/code style-black-000000.svg">
+<img alt="Python Version" src="https://img.shields.io/badge/python-3.11+-blue"> <img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-0.104.1-green"> <img alt="Code style: black" src="https://img.shields.io/badge/code style-black-000000.svg">
 
 # Infrastructure RAG
 
