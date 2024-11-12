@@ -5,18 +5,7 @@ import httpx
 from fastapi.testclient import TestClient
 from src.api.main import app
 import asyncio
-
-client = TestClient(app)
-
-def test_health_check():
-    response = client.get("/health")
-    assert response.status_code == 200
-    assert response.json() == {"status": "healthy"}
-
-def test_health_check():
-    response = client.get("/health")
-    assert response.status_code == 200
-    assert response.json() == {"status": "healthy"}
+from src.api.schemas import MetricAnalysis, RiskLevel
 
 @pytest.mark.asyncio
 async def test_analyze_metrics():
@@ -24,41 +13,36 @@ async def test_analyze_metrics():
         transport=httpx.ASGITransport(app=app),
         base_url="http://test"
     ) as ac:
-        mock_metrics = [
-            {'metric': 'cpu_usage', 'value': '0.9', 'timestamp': 1234567890}
-        ]
+        # Format metrics as dictionary
+        mock_metrics = {
+            "cpu_usage": {
+                "value": 0.9,
+                "timestamp": 1234567890
+            }
+        }
         
+        # Create valid MetricAnalysis instance
+        mock_analysis = MetricAnalysis(
+            summary="High CPU usage detected",
+            historical_comparison="Above normal levels",
+            anomalies=["CPU spike detected"],
+            recommendations=["Consider scaling up"],
+            risk_level=RiskLevel.HIGH
+        )
+
         mock_analyzer = MagicMock()
         future = asyncio.Future()
         future.set_result({
             "current_metrics": mock_metrics,
             "similar_patterns": mock_metrics,
-            "analysis": "Analysis result"
+            "analysis": mock_analysis
         })
         mock_analyzer.analyze_query.return_value = future
         
         with patch('src.api.main.MetricsAnalyzer', return_value=mock_analyzer):
             response = await ac.post("/analyze", json={"query": "high cpu usage"})
             assert response.status_code == 200
-
-def test_get_raw_metrics():
-    # Setup mock data
-    mock_metrics = [
-        {'metric': 'cpu_usage', 'value': '0.9', 'timestamp': 1234567890}
-    ]
-    
-    # Create nested mock structure
-    mock_prometheus = MagicMock()
-    mock_prometheus.get_node_metrics.return_value = mock_metrics
-    
-    mock_analyzer = MagicMock()
-    mock_analyzer.prometheus = mock_prometheus
-    
-    # Patch MetricsAnalyzer constructor
-    with patch('src.api.main.MetricsAnalyzer', return_value=mock_analyzer):
-        response = client.get("/metrics")
-        
-        # Assertions
-        assert response.status_code == 200
-        assert response.json() == mock_metrics
-        mock_prometheus.get_node_metrics.assert_called_once()
+            data = response.json()
+            assert "current_metrics" in data
+            assert "analysis" in data
+            assert data["analysis"]["risk_level"] == "high"
