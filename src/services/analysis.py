@@ -68,6 +68,10 @@ class MetricsAnalyzer:
             for m in similar
         }
 
+        # Store current metrics
+        logger.info(f"Storing metrics for query: {query}")
+        self.vector_store.add_metrics(formatted_metrics)
+
         # Get LLM analysis
         llm_response = await self.llm.analyze_metrics(
             {"current": current_metrics, "historical": similar_patterns}, query
