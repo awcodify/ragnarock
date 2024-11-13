@@ -14,10 +14,23 @@ Real-time infrastructure analysis using RAG (Retrieval Augmented Generation) pow
 ## Architecture
 ```mermaid
 graph LR
-    A[Prometheus] --> B[RAG Service]
-    B --> C[Vector Store]
-    B --> D[LLM/Claude]
-    B --> E[API]
+    subgraph Data Collection
+        Prometheus --> CollectMetrics[Collect Metrics]
+    end
+
+    subgraph RAG Service
+        CollectMetrics --> SearchHistorical[Search Historical]
+        SearchHistorical --> VectorStore[Vector Store/Qdrant]
+        VectorStore --> Analysis[Similar Patterns]
+        Analysis --> Claude[Claude LLM]
+        SearchHistorical --> StoreNew[Store New Metrics]
+        StoreNew --> VectorStore
+    end
+
+    subgraph API Layer
+        Claude --> APIEndpoints[FastAPI Service]
+        APIEndpoints --> Response[JSON Response]
+    end
 ```
 
 ## Features
