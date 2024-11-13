@@ -7,7 +7,7 @@ from src.config import settings
 import logging
 import traceback
 
-logger = logging.getLogger(__name__) 
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Infrastructure RAG",
@@ -15,18 +15,19 @@ app = FastAPI(
     version="1.0.0",
 )
 
+
 @app.post("/analyze", response_model=AnalysisResponse)
 async def analyze_metrics(request: QueryRequest) -> AnalysisResponse:
     try:
         logger.info(f"Received analysis request with query: {request.query}")
         analyzer = MetricsAnalyzer(settings.prometheus_url)
-        
+
         logger.debug(f"Connecting to Prometheus at: {settings.prometheus_url}")
         results = await analyzer.analyze_query(request.query)
-        
+
         logger.info("Analysis completed successfully")
         return AnalysisResponse(**results)
-        
+
     except Exception as e:
         logger.error(
             f"Error analyzing metrics for query '{request.query}'\n"
@@ -35,17 +36,14 @@ async def analyze_metrics(request: QueryRequest) -> AnalysisResponse:
             f"Traceback:\n{traceback.format_exc()}"
         )
         raise HTTPException(
-            status_code=500,
-            detail=f"Analysis failed: {type(e).__name__} - {str(e)}"
+            status_code=500, detail=f"Analysis failed: {type(e).__name__} - {str(e)}"
         )
-    
+
+
 @app.get("/health", response_model=HealthCheckResponse)
 async def health_check() -> HealthCheckResponse:
     try:
         return await HealthChecker.check_all()
     except Exception as e:
         logger.error(f"Health check failed: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Health check failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Health check failed: {str(e)}")

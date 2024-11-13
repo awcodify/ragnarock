@@ -8,6 +8,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class HealthChecker:
     @staticmethod
     async def check_prometheus() -> Dict:
@@ -38,7 +39,7 @@ class HealthChecker:
                 response = client.messages.create(
                     model=settings.claude_model,
                     max_tokens=1,
-                    messages=[{"role": "user", "content": "hi"}]
+                    messages=[{"role": "user", "content": "hi"}],
                 )
                 if not response:
                     raise Exception("No response from Claude")
@@ -47,7 +48,7 @@ class HealthChecker:
                 response = await client.chat.completions.create(
                     model=settings.gpt_model,
                     max_tokens=1,
-                    messages=[{"role": "user", "content": "hi"}]
+                    messages=[{"role": "user", "content": "hi"}],
                 )
             return {"status": "healthy"}
         except Exception as e:
@@ -61,12 +62,11 @@ class HealthChecker:
             "vector_store": await HealthChecker.check_vector_store(),
             "llm": await HealthChecker.check_llm(),
         }
-        
-        overall_status = "healthy" if all(
-            service["status"] == "healthy" for service in results.values()
-        ) else "unhealthy"
-        
-        return {
-            "status": overall_status,
-            "services": results
-        }
+
+        overall_status = (
+            "healthy"
+            if all(service["status"] == "healthy" for service in results.values())
+            else "unhealthy"
+        )
+
+        return {"status": overall_status, "services": results}

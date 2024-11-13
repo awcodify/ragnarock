@@ -4,9 +4,10 @@ import logging
 from anthropic import Anthropic
 from openai import OpenAI
 from src.config import settings, LLMProvider
-from src.api.schemas import MetricAnalysis, RiskLevel
+from src.api.schemas import RiskLevel
 
 logger = logging.getLogger(__name__)
+
 
 class LLMService:
     def __init__(self):
@@ -25,23 +26,25 @@ class LLMService:
             response = self.client.messages.create(
                 model=self.model,
                 max_tokens=1000,
-                messages=[{
-                    "role": "user",
-                    "content": f"Analyze these metrics: {metrics}\nQuery: {query}"
-                }]
+                messages=[
+                    {
+                        "role": "user",
+                        "content": f"Analyze these metrics: {metrics}\nQuery: {query}",
+                    }
+                ],
             )
-            
+
             # Extract content from response
             content = str(response.content)
-            
+
             return {
                 "summary": content,
                 "historical_comparison": "Analysis based on historical data",
                 "anomalies": [],
                 "recommendations": [],
-                "risk_level": RiskLevel.LOW
+                "risk_level": RiskLevel.LOW,
             }
-            
+
         except Exception as e:
             logger.error(f"LLM analysis failed: {str(e)}")
             raise ValueError(f"LLM analysis failed: {str(e)}")
