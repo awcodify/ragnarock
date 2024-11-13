@@ -1,5 +1,15 @@
 version: '3'
 services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - PROMETHEUS_URL=http://prometheus:9090
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    depends_on:
+      - prometheus
+      - qdrant
   prometheus:
     image: prom/prometheus
     ports:
@@ -11,3 +21,15 @@ services:
     image: prom/node-exporter
     ports:
       - "9100:9100"
+
+  qdrant:
+    image: qdrant/qdrant
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    environment:
+      - QDRANT_STORAGE_PATH=/qdrant/storage
+
+volumes:
+  qdrant_storage:
