@@ -36,13 +36,11 @@ def test_initialization(mock_qdrant):
     mock_client = mock_qdrant.return_value
     mock_client.collection_exists.return_value = False
 
-    store = MetricsVectorStore()
-
     mock_client.collection_exists.assert_called_once()
     mock_client.create_collection.assert_called_once()
 
 
-def test_add_metrics(mock_qdrant, mock_embeddings, test_metrics):
+def test_add_metrics(mock_qdrant, test_metrics):
     store = MetricsVectorStore()
     store.add_metrics(test_metrics)
 
@@ -61,7 +59,7 @@ def test_add_metrics(mock_qdrant, mock_embeddings, test_metrics):
     assert "timestamp" in points[0].payload
 
 
-def test_similar_metrics(mock_qdrant, mock_embeddings):
+def test_similar_metrics(mock_qdrant):
     store = MetricsVectorStore()
     query = "high cpu usage"
 
