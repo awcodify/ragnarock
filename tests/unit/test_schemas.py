@@ -14,21 +14,6 @@ def test_query_request_none():
         QueryRequest(query=None)  # None should fail validation
 
 
-def test_analysis_response_valid():
-    response = AnalysisResponse(
-        current_metrics={"cpu": 0.8},
-        similar_patterns={"cpu": 0.7},
-        analysis=MetricAnalysis(
-            summary="Normal operation",
-            historical_comparison="Stable",
-            anomalies=[],
-            recommendations=[],
-            risk_level=RiskLevel.LOW,
-        ),
-    )
-    assert isinstance(response.analysis, MetricAnalysis)
-
-
 def test_metric_analysis_invalid_risk():
     with pytest.raises(ValidationError):
         MetricAnalysis(
@@ -36,7 +21,6 @@ def test_metric_analysis_invalid_risk():
         )
 
 
-# tests/unit/test_schemas.py
 def test_analysis_response_valid():
     response = AnalysisResponse(
         current_metrics={"cpu": {"value": 0.8, "timestamp": 1234567890}},
