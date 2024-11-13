@@ -1,7 +1,6 @@
 # tests/unit/test_prometheus_client.py
 import pytest
-from unittest.mock import Mock, patch
-from datetime import datetime
+from unittest.mock import patch
 from src.data.prometheus_client import PrometheusClient
 
 

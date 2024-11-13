@@ -2,7 +2,6 @@ import pytest
 from unittest.mock import patch, MagicMock
 from httpx import AsyncClient
 import httpx
-from fastapi.testclient import TestClient
 from src.api.main import app
 import asyncio
 from src.api.schemas import MetricAnalysis, RiskLevel

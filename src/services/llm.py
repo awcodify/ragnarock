@@ -4,7 +4,7 @@ import logging
 from anthropic import Anthropic
 from openai import OpenAI
 from src.config import settings, LLMProvider
-from src.api.schemas import MetricAnalysis, RiskLevel
+from src.api.schemas import RiskLevel
 
 logger = logging.getLogger(__name__)
 

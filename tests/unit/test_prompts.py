@@ -1,4 +1,3 @@
-import pytest
 from src.templates.prompts import PromptGenerator
 
 
