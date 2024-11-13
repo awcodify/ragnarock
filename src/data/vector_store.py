@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Dict, List, Optional
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
+from tenacity import retry, stop_after_attempt, wait_exponential
 from langchain_community.embeddings import HuggingFaceEmbeddings
 import logging
 
@@ -13,13 +14,35 @@ METRIC = models.Distance.COSINE
 
 
 class MetricsVectorStore:
-    def __init__(self, collection_name: str = "metrics"):
-        self.collection_name = collection_name
-        self.client = QdrantClient(":memory:")
+    def __init__(self, host: str = "localhost", port: int = 6333):
+        self.collection_name = "metrics"
         self.embeddings = HuggingFaceEmbeddings(
             model_name="sentence-transformers/all-MiniLM-L6-v2"
         )
-        self._create_collection()
+        try:
+            self.client = QdrantClient(host=host, port=port)
+            self._init_collection()
+            logger.info(f"Connected to Qdrant at {host}:{port}")
+        except Exception as e:
+            logger.error(f"Error connecting to Qdrant: {str(e)}")
+            raise
+
+    @retry(
+        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10)
+    )
+    def _init_collection(self):
+        try:
+            if not self.client.collection_exists(self.collection_name):
+                self.client.create_collection(
+                    collection_name=self.collection_name,
+                    vectors_config=models.VectorParams(
+                        size=VECTOR_SIZE, distance=METRIC
+                    ),
+                )
+                logger.info(f"Created collection: {self.collection_name}")
+        except Exception as e:
+            logger.error(f"Error creating collection: {str(e)}")
+            raise
 
     def _create_collection(self) -> None:
         """Initialize vector collection"""
