@@ -36,6 +36,8 @@ def test_initialization(mock_qdrant):
     mock_client = mock_qdrant.return_value
     mock_client.collection_exists.return_value = False
 
+    MetricsVectorStore()
+
     mock_client.collection_exists.assert_called_once()
     mock_client.create_collection.assert_called_once()
 
