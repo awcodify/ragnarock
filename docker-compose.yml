@@ -31,5 +31,28 @@ services:
     environment:
       - QDRANT_STORAGE_PATH=/qdrant/storage
 
+  clickhouse:
+    image: clickhouse/clickhouse-server
+    ports:
+      - "8123:8123"
+    healthcheck:
+      test: wget --spider --tries 1 http://localhost:8123/ping
+      start_period: 30s
+      start_interval: 1s
+      timeout: 1s
+
+  gateway:
+    image: tensorzero/gateway
+    volumes:
+      # Mount our tensorzero.toml file into the container
+      - ./tensorzero:/app/config:ro
+    environment:
+      - CLICKHOUSE_URL=http://clickhouse:8123/tensorzero
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:?Environment variable ANTHROPIC_API_KEY must be set.}
+    ports:
+      - "3000:3000"
+    depends_on:
+      clickhouse:
+        condition: service_healthy
 volumes:
   qdrant_storage:
