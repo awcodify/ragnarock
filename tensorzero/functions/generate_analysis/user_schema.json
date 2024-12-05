@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "metrics": {
+      "type": "object",
+      "description": "Metrics to be used in the analysis"
+    },
+    "query": {
+      "type": "string",
+      "description": "Query to be used in the analysis"
+    }
+  },
+  "required": ["metrics", "query"],
+  "additionalProperties": false
+}
