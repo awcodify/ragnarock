@@ -78,8 +78,8 @@ class MetricsAnalyzer:
         )
 
         # Convert ContentBlock to string if needed
-        if hasattr(llm_response["summary"], "text"):
-            llm_response["summary"] = llm_response["summary"].text
+        if hasattr(llm_response["result"], "text"):
+            llm_response["result"] = llm_response["result"].text
 
         return {
             "current_metrics": current_metrics,
