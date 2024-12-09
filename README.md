@@ -6,10 +6,8 @@
 > 🤖 **AI-Driven Development**: This is an experimental project built through human-AI collaboration using GitHub Copilot and Claude 3.5 Sonnet. The code architecture, implementation decisions, and problem-solving approaches were developed through iterative AI-assisted development.
 ---
 
-Real-time infrastructure analysis using RAG (Retrieval Augmented Generation) powered by Claude 3.5 Sonnet. Analyze Prometheus metrics using vector similarity search and LLM to provide insights, anomaly detection, and recommendations.
-
 ## Overview
-Real-time infrastructure analysis using RAG (Retrieval Augmented Generation) powered by Claude 3.5 Sonnet. This tool analyzes Prometheus metrics using vector similarity search and LLM to provide insights and recommendations.
+Real-time infrastructure analysis using RAG (Retrieval Augmented Generation). Analyze Prometheus metrics using vector similarity search and LLM to provide insights, anomaly detection, and recommendations.
 
 ## Architecture
 ```mermaid
@@ -22,13 +20,19 @@ graph LR
         CollectMetrics --> SearchHistorical[Search Historical]
         SearchHistorical --> VectorStore[Vector Store/Qdrant]
         VectorStore --> Analysis[Similar Patterns]
-        Analysis --> Claude[Claude LLM]
+        Analysis --> TensorZero[TensorZero Gateway]
+        TensorZero --> LLMProviders[LLM Providers]
         SearchHistorical --> StoreNew[Store New Metrics]
         StoreNew --> VectorStore
     end
 
+    subgraph LLM Providers
+        Claude[Claude] 
+        Ollama[Ollama]
+    end
+
     subgraph API Layer
-        Claude --> APIEndpoints[FastAPI Service]
+        LLMProviders --> APIEndpoints[FastAPI Service]
         APIEndpoints --> Response[JSON Response]
     end
 ```
@@ -36,7 +40,10 @@ graph LR
 ## Features
 - Prometheus metrics collection and analysis
 - Vector similarity search for historical patterns
-- LLM-powered insights using Claude 3.5 Sonnet
+- Flexible LLM support through TensorZero:
+  * Claude
+  * Local LLMs via Ollama
+  * Others: [https://www.tensorzero.com/docs/gateway/guides/providers/openai-compatible](https://www.tensorzero.com/docs/gateway/guides/providers/)
 - REST API with FastAPI
 - Structured responses with validation
 - Async support
@@ -46,14 +53,13 @@ graph LR
 - Python 3.11+
 - Prometheus
 - Node Exporter
-- Anthropic API key
 
 ## Installation
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/infra-rag.git
-cd infra-rag
+git clone https://github.com/awcodify/ragnarock.git
+cd ragnarock
 
 # Create virtual environment and install dependencies
 make setup
@@ -63,19 +69,54 @@ cp .env.example .env
 
 ```
 
+## Run Dependencies
+
+For development purposes, we already create docker-compose for all dependencies. You can simply run:
+
+```bash
+docker-compose up -d
+```
+
+If you want to run local LLM, we recommend using `ollama`:
+
+1. Install `ollama`. Find the docs in: https://github.com/ollama/ollama
+2. Run ollama:
+
+```bash
+# pull model
+ollama pull llama3.2
+
+# serve ollama api
+OLLAMA_HOST=localhost:1090 ollama serve
+```
+
+
 ## Configuration
 
 Required environment variables in .env:
 ```
 PROMETHEUS_URL=http://localhost:9090
-ANTHROPIC_API_KEY=your_key_here
-LLM_PROVIDER=claude
 ```
+
+### TensorZero Configuration
+
+The project uses TensorZero for unified LLM interface. Configuration is defined in `tensorzero/tensorzero.toml`:
+
+https://github.com/awcodify/ragnarock/blob/6c1414024a331e9e62591581a5ce411fd4c91889/tensorzero/tensorzero.toml#L1-L25
 
 ## Usage
 ### Start Server
+
+Run api by using this command:
+
+```bash
 make run
 
+# or
+# uvicorn src.api.main:app --reload 
+```
+
+If server run, you can do analyze by using this endpoint:
 ```bash
 curl -X POST http://localhost:8000/analyze \
   -H "Content-Type: application/json" \
