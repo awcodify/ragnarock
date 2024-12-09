@@ -1,3 +1,12 @@
+[models.llama3_2]
+routing = ["ollama"]
+
+[models.llama3_2.providers.ollama]
+type = "openai"
+api_base = "http://host.docker.internal:1090/v1/"
+model_name = "llama3.2"
+api_key_location = "none"
+
 [models.claude-3-5-sonnet-latest]
 routing = ["anthropic"]
 
@@ -9,7 +18,8 @@ model_name = "claude-3-5-haiku-20241022"
 type = "chat"
 user_schema = "functions/generate_analysis/user_schema.json"
 
-[functions.generate_analysis.variants.anthropic]
+[functions.generate_analysis.variants.llama3_2]
 type = "chat_completion"
-model = "claude-3-5-sonnet-latest"
-user_template = "functions/generate_analysis/anthropic/user_template.minijinja"
+model = "llama3_2"
+system_template = "functions/generate_analysis/system_template.minijinja"
+user_template = "functions/generate_analysis/user_template.minijinja"
