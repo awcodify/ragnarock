@@ -21,4 +21,5 @@ user_schema = "functions/generate_analysis/user_schema.json"
 [functions.generate_analysis.variants.llama3_2]
 type = "chat_completion"
 model = "llama3_2"
-user_template = "functions/generate_analysis/anthropic/user_template.minijinja"
+system_template = "functions/generate_analysis/system_template.minijinja"
+user_template = "functions/generate_analysis/user_template.minijinja"

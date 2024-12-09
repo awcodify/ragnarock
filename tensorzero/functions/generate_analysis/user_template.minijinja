@@ -1,0 +1,15 @@
+Analyze the following infrastructure metrics:
+
+Metrics:
+{{ metrics }}
+
+Query Context: {{ query }}
+
+Provide a complete analysis including:
+1. Current state summary
+2. Historical pattern comparison
+3. Identified anomalies or issues
+4. Optimization recommendations
+5. Risk assessment level with justification
+
+Focus on actionable insights and critical patterns.
