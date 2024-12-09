@@ -4,22 +4,12 @@ from typing import List, Dict
 from enum import Enum
 
 
-class RiskLevel(str, Enum):
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
-
-
 class QueryRequest(BaseModel):
     query: constr(min_length=1) = Field(..., description="Query string for analysis")
 
 
 class MetricAnalysis(BaseModel):
-    summary: str = Field(..., description="Overall analysis summary")
-    historical_comparison: str = Field(..., description="Comparison with past patterns")
-    anomalies: List[str] = Field(default_factory=list)
-    recommendations: List[str] = Field(default_factory=list)
-    risk_level: RiskLevel = Field(default=RiskLevel.LOW)
+    result: str = Field(..., description="Overall analysis summary")
 
 
 class AnalysisResponse(BaseModel):

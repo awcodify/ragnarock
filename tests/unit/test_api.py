@@ -4,7 +4,7 @@ from httpx import AsyncClient
 import httpx
 from src.api.main import app
 import asyncio
-from src.api.schemas import MetricAnalysis, RiskLevel
+from src.api.schemas import MetricAnalysis
 
 
 @pytest.mark.asyncio
@@ -17,11 +17,7 @@ async def test_analyze_metrics():
 
         # Create valid MetricAnalysis instance
         mock_analysis = MetricAnalysis(
-            summary="High CPU usage detected",
-            historical_comparison="Above normal levels",
-            anomalies=["CPU spike detected"],
-            recommendations=["Consider scaling up"],
-            risk_level=RiskLevel.HIGH,
+            result="High CPU usage detected",
         )
 
         mock_analyzer = MagicMock()
@@ -41,4 +37,3 @@ async def test_analyze_metrics():
             data = response.json()
             assert "current_metrics" in data
             assert "analysis" in data
-            assert data["analysis"]["risk_level"] == "high"

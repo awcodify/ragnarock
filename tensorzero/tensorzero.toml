@@ -1,0 +1,15 @@
+[models.claude-3-5-sonnet-latest]
+routing = ["anthropic"]
+
+[models.claude-3-5-sonnet-latest.providers.anthropic]
+type = "anthropic"
+model_name = "claude-3-5-haiku-20241022"
+
+[functions.generate_analysis]
+type = "chat"
+user_schema = "functions/generate_analysis/user_schema.json"
+
+[functions.generate_analysis.variants.anthropic]
+type = "chat_completion"
+model = "claude-3-5-sonnet-latest"
+user_template = "functions/generate_analysis/anthropic/user_template.minijinja"

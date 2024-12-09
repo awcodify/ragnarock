@@ -10,7 +10,7 @@ async def test_health_check_all_healthy():
 
     with patch("src.services.health.PrometheusConnect") as mock_prom, patch(
         "src.services.health.QdrantClient"
-    ) as mock_qdrant, patch("src.services.health.Anthropic") as mock_anthropic, patch(
+    ) as mock_qdrant, patch(
         "src.services.health.settings"
     ) as mock_settings:
 
@@ -21,7 +21,6 @@ async def test_health_check_all_healthy():
         # Setup synchronous mock for Claude
         mock_client = MagicMock()  # Changed from AsyncMock to MagicMock
         mock_client.messages.create.return_value = mock_response
-        mock_anthropic.return_value = mock_client
 
         # Set provider to CLAUDE
         mock_settings.llm_provider = "claude"

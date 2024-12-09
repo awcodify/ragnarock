@@ -93,11 +93,7 @@ async def test_analyze_query():
         # Setup LLM mock
         llm = MagicMock()
         llm.analyze_metrics.return_value = {
-            "summary": "Test analysis",
-            "historical_comparison": "Test comparison",
-            "anomalies": [],
-            "recommendations": [],
-            "risk_level": "low",
+            "result": "Test analysis",
         }
         mock_llm.return_value = llm
 
